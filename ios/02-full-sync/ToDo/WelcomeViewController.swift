@@ -19,6 +19,7 @@
 import UIKit
 import RealmSwift
 
+
 class WelcomeViewController: UIViewController {
 
     let usernameField = UITextField()
@@ -70,37 +71,65 @@ class WelcomeViewController: UIViewController {
         ])
 
         // Add some text at the top of the view to explain what to do.
+        let entryLocalLabel = UILabel()
+        entryLocalLabel.numberOfLines = 1
+        entryLocalLabel.font = UIFont(name: "DINOT", size: CGFloat(35))
+        entryLocalLabel.text = "TODO App"
+        entryLocalLabel.textColor = UIColor.systemGreen
+        container.addArrangedSubview(entryLocalLabel)
+        
         let infoLabel = UILabel()
-        infoLabel.numberOfLines = 0
+        infoLabel.numberOfLines = 1
+        infoLabel.font = UIFont(name: "DINOT", size: CGFloat(18))
         infoLabel.text = "Please enter a username and password."
         container.addArrangedSubview(infoLabel)
         
         // Configure the username and password text input fields. 
         usernameField.placeholder = "Username"
         usernameField.borderStyle = .roundedRect
+        usernameField.font = UIFont(name: "DINOT", size: CGFloat(15))
         container.addArrangedSubview(usernameField)
 
         passwordField.placeholder = "Password"
         passwordField.isSecureTextEntry = true
+        passwordField.font = UIFont(name: "DINOT", size: CGFloat(15))
         passwordField.borderStyle = .roundedRect
         container.addArrangedSubview(passwordField)
         
         // Configure the sign in and sign up buttons.
         signInButton.setTitle("Sign In", for: .normal);
         signInButton.addTarget(self, action: #selector(signIn), for: .touchUpInside)
+        signInButton.backgroundColor = UIColor.systemGreen
+        signInButton.tintColor = UIColor.white
         container.addArrangedSubview(signInButton)
         
         signUpButton.setTitle("Sign Up", for: .normal);
         signUpButton.addTarget(self, action: #selector(signUp), for: .touchUpInside)
+        signUpButton.backgroundColor = UIColor.white
+        signUpButton.tintColor = UIColor.systemBlue
         container.addArrangedSubview(signUpButton)
+        
+        let dotLocalLabel = UILabel()
+        dotLocalLabel.numberOfLines = 1
+        dotLocalLabel.font = UIFont(name: "DINOT", size: CGFloat(25))
+        dotLocalLabel.text = "MONGODB.L{·}CAL   PARIS"
+        dotLocalLabel.textColor = UIColor.systemGreen
+        container.addArrangedSubview(dotLocalLabel)
+        
         
         // Error messages will be set on the errorLabel.
         errorLabel.numberOfLines = 0
         errorLabel.textColor = .red
         container.addArrangedSubview(errorLabel)
+        
+        for u in SyncUser.all {
+            u.value.logOut()
+        }
+
     }
 
     @objc func signIn() {
+
         logIn(username: username!, password: password!, register: false)
     }
 
@@ -112,8 +141,10 @@ class WelcomeViewController: UIViewController {
     func logIn(username: String, password: String, register: Bool) {
         print("Log in as user: \(username) with register: \(register)");
         setLoading(true);
+        
         let creds = SyncCredentials.usernamePassword(username: username, password: password, register: register);
         SyncUser.logIn(with: creds, server: Constants.AUTH_URL, onCompletion: { [weak self](user, err) in
+            
             self!.setLoading(false);
             if let error = err { 
                 // Auth error: user already exists? Try logging in as that user.
@@ -122,7 +153,10 @@ class WelcomeViewController: UIViewController {
                 return;
             }
             print("Login succeeded!");
+                        
             self!.navigationController!.pushViewController(ItemsViewController(), animated: true);
+            
+            
         });
     }
     
@@ -134,6 +168,7 @@ class WelcomeViewController: UIViewController {
         } else {
             activityIndicator.stopAnimating();
         }
+
         usernameField.isEnabled = !loading
         passwordField.isEnabled = !loading
         signInButton.isEnabled = !loading

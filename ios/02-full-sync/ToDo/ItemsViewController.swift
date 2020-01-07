@@ -40,7 +40,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Things ToDo!"
+        title = "Things ToDo"
         view.addSubview(tableView)
         tableView.frame = self.view.frame
         self.tableView.delegate = self
